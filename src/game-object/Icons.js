@@ -22,7 +22,8 @@ export default class Icons extends Phaser.GameObjects.Sprite {
     this.row = row;
     this.col = col;
 
-    
+    this.setInteractive(new Phaser.Geom.Circle(this.width/2, this.height/2, this.width/2), Phaser.Geom.Circle.Contains);
     scene.add.existing(this);
+
   }
 }

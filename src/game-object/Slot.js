@@ -6,7 +6,6 @@ export default class Slots extends Phaser.GameObjects.Sprite {
     //TODO
     const x = CELL_SIZE * (col + 0.5);
     const y = CELL_SIZE * (row + 0.5);
-    const texture = "slot" ;
 
     super(scene, x, y, "slot");
 
