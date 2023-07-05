@@ -18,6 +18,8 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.slots = this.add.group();
+    
     for (var row = 0; row < 4; row++) {
       for (var col = 0; col < 4; col++) {
         var slot = new Slots(this, row, col);
@@ -30,7 +32,6 @@ export default class PlayScene extends Phaser.Scene {
       }
     }
     this.input.on('pointerdown', this.startDrag, this)
-    console.log(this.map);
 
     //TODO
     // - lập trình để kéo icon, icon đi theo con trỏ chuột
@@ -60,24 +61,39 @@ export default class PlayScene extends Phaser.Scene {
     this.input.off('pointermove', this.doDrag, this)
     this.input.off('pointerup', this.stopDrag, this)
     this.checkCollision(pointer, this.dragObj)
-    console.log(pointer.x, pointer.y);
   }
 
   checkCollision(pointer, target) {
-    for (var row = 0; row < 4; row++) {
-      for (var col = 0; col < 4; col++) {
-        var destinationTarget = this.map[row][col]
-        if (destinationTarget.getBounds().contains(target.x, target.y)) {
-          if (destinationTarget.level == target.level) {
-            target.destroy()
-            destinationTarget.destroy()
-            new Icons(this, Phaser.Math.Between(1, 1), target.row, target.col)
-            new Icons(this, destinationTarget.level + 1, destinationTarget.row, destinationTarget.col)
-          }
-        }
-      }
+    var destinationTarget = this.map[Math.floor(pointer.y / 100)][Math.floor(pointer.x / 100)]
+    console.log("destinationTarget", destinationTarget);
+    if (destinationTarget == target) {
+      target.x = target.col * 100 + 50
+      target.y = target.row * 100 + 50
+      return
+    }
+    if (destinationTarget.level == target.level) {
+      this.mergeIcon(target, destinationTarget)
+    } else {
+      target.x = target.col * 100 + 50
+      target.y = target.row * 100 + 50
     }
   }
 
-  update() { }
+  mergeIcon(target, destinationTarget) {
+    console.log("collision");
+    target.destroy()
+    destinationTarget.destroy()
+    this.map[target.row][target.col] = new Icons(this, Phaser.Math.Between(1, 2), target.row, target.col)
+    this.map[destinationTarget.row][destinationTarget.col] = new Icons(this, destinationTarget.level + 1, destinationTarget.row, destinationTarget.col)
+    var flag = false;
+    if (this.map[destinationTarget.row][destinationTarget.col].level == 3) {
+      flag = true;
+    }
+    if (flag == true) {
+      setTimeout(() => {alert("You win")}, 100);
+    }
+  }
+
+  update() {
+  }
 }
